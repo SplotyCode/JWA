@@ -6,10 +6,18 @@ import com.google.common.collect.Table;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * This class Manages the Listeners
+ * You can register and call Events with it
+ */
 public class ListenerRegistry {
 
     private Table<Class<? extends Event>, Listener, Method> packetListener = HashBasedTable.create();
 
+    /**
+     * Registers all Events in an Listener
+     * @param listener the listener that you want to register
+     */
     public void addListener(Listener listener) {
         Class<? extends Listener> clazz = listener.getClass();
         for (Method method : clazz.getDeclaredMethods()) {
@@ -19,6 +27,10 @@ public class ListenerRegistry {
         }
     }
 
+    /**
+     * Call a Event to all Listeners that listening on that Even Type
+     * @param event the event that you want to call
+     */
     public void callEvent(Event event) {
         if(!packetListener.containsRow(event.getClass())) return;
         packetListener.row(event.getClass()).forEach(((listener, method) -> {

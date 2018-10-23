@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Events triggers when the Status of the Whatapp connection changes
+ */
 @AllArgsConstructor
 @Getter
 @Setter

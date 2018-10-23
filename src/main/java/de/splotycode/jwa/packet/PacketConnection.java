@@ -15,7 +15,7 @@ public class PacketConnection {
 
     @Getter private Connection connection;
     private Packet packet;
-    @Getter private JSONObject object;
+    @Getter private JSONObject object = new JSONObject();
     @Getter private Map<String, String> headers = new HashMap<>();
 
     public PacketConnection(Connection connection, Packet packet) {
@@ -23,22 +23,47 @@ public class PacketConnection {
         this.packet = packet;
     }
 
+    /**
+     * Adds an Http Header to this Packet
+     * @param name the name of the header
+     * @param value the value of the header
+     */
     public void addHeader(String name, String value) {
         headers.put(name, value);
     }
 
+    /**
+     * Adds an jason variable
+     * @param name name if the variable
+     * @param value value of the variable
+     */
     public void addJson(String name, String value) {
         object.put(name, value);
     }
 
+    /**
+     * Adds an jason variable
+     * @param name name if the variable
+     * @param value value of the variable
+     */
     public void addJson(String name, int value) {
         object.put(name, value);
     }
 
+    /**
+     * Adds an jason variable
+     * @param name name if the variable
+     * @param value value of the variable
+     */
     public void addJson(String name, long value) {
         object.put(name, value);
     }
 
+    /**
+     * Sends the Packet to a Server
+     * @return the server response
+     * @throws IOException Socket IO Exceptions
+     */
     public ResponseContext send() throws IOException {
         headers.put("Content-Type", "application/json");
         //Add Session Id if needed

@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This represents an whatsapp response
+ */
 public class ResponseContext {
 
     @Getter private Set<Error> errors = new HashSet<>();
@@ -28,6 +31,10 @@ public class ResponseContext {
         }
     }
 
+    /**
+     * Parses an raw response into this object
+     * @param response the raw response
+     */
     public void parse(String response) {
         String[] lines = response.split("\n");
         String[] firstLine = lines[0].split(" ");

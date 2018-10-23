@@ -15,6 +15,10 @@ import java.net.SocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * The Main Connection to Whatsapp (Not Keep-Alive)
+ * @see de.splotycode.jwa.builder.ConnectionBuilder
+ */
 public class Connection {
 
     @Getter private SocketAddress address;
