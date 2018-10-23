@@ -1,6 +1,7 @@
 package de.splotycode.jwa;
 
 import de.splotycode.jwa.core.Status;
+import de.splotycode.jwa.listener.ListenerRegistry;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.PacketConnection;
 import de.splotycode.jwa.response.Response;
@@ -20,6 +21,7 @@ public class Connection {
     @Getter private String session;
     private Status status = Status.INITILISED;
     private Executor executor = Executors.newSingleThreadExecutor();
+    @Getter @Setter private ListenerRegistry listenerRegistry;
 
     public Connection(SocketAddress address, String username, String password) {
         this.address = address;
