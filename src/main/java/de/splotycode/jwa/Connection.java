@@ -2,6 +2,7 @@ package de.splotycode.jwa;
 
 import de.splotycode.jwa.core.Status;
 import de.splotycode.jwa.listener.ListenerRegistry;
+import de.splotycode.jwa.listener.events.StatusChangeEvent;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.PacketConnection;
 import de.splotycode.jwa.response.Response;
@@ -19,7 +20,7 @@ public class Connection {
     @Getter private SocketAddress address;
     @Setter private String username, password;
     @Getter private String session;
-    private Status status = Status.INITILISED;
+    @Getter private Status status = Status.INITILISED;
     private Executor executor = Executors.newSingleThreadExecutor();
     @Getter @Setter private ListenerRegistry listenerRegistry;
 
@@ -31,6 +32,7 @@ public class Connection {
 
     public void login() {
 
+        setStatus(Status.ONLINE);
     }
 
     public <P extends Response> P sendPacket(Class<P> clazz) {
@@ -66,4 +68,8 @@ public class Connection {
         }
     }
 
+    public void setStatus(Status status) {
+        listenerRegistry.callEvent(new StatusChangeEvent(this.status, status));
+        this.status = status;
+    }
 }
