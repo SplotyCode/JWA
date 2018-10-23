@@ -47,7 +47,7 @@ public class ConnectionBuilder implements Builder<Connection> {
         listeners.forEach(listenerRegistry::addListener);
         connection.setListenerRegistry(listenerRegistry);
 
-        connection.setStatus(Status.INITILISED);
+        connection.setStatus(Status.INITIALISED);
 
         connection.login();
         return connection;

@@ -24,7 +24,7 @@ public class Connection {
     @Getter private SocketAddress address;
     @Setter private String username, password;
     @Getter private String session;
-    @Getter private Status status = Status.INITILISED;
+    @Getter private Status status = Status.INITIALISED;
     private Executor executor = Executors.newSingleThreadExecutor();
     @Getter @Setter private ListenerRegistry listenerRegistry;
 

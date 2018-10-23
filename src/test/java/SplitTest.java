@@ -1,8 +1,6 @@
-package de.splotycode;
-
 import java.util.Arrays;
 
-public class Test {
+public class SplitTest {
 
     public static void main(String[] args) {
         String http = "HTTP/1.1 200 OK\n" +
