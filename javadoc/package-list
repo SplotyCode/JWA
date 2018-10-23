@@ -1,0 +1,8 @@
+de.splotycode.jwa
+de.splotycode.jwa.builder
+de.splotycode.jwa.core
+de.splotycode.jwa.listener
+de.splotycode.jwa.listener.events
+de.splotycode.jwa.packet
+de.splotycode.jwa.response
+de.splotycode.jwa.utils
