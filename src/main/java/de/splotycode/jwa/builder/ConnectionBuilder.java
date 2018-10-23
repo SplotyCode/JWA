@@ -18,7 +18,6 @@ import java.util.Set;
  * @see Connection
  */
 @Getter
-@Setter
 public class ConnectionBuilder implements Builder<Connection> {
 
     private String host;
@@ -27,7 +26,16 @@ public class ConnectionBuilder implements Builder<Connection> {
 
     private Set<Listener> listeners = new HashSet<>();
 
+    private boolean build = false;
+
+    /**
+     * Builds the Connection
+     * wants that method is called you can not use this object anymore
+     * @return the new Connection
+     */
     public Connection build() {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        build = true;
         if (StringUtil.isEmpty(host)) {
             host = "localhost";
         }
@@ -54,10 +62,37 @@ public class ConnectionBuilder implements Builder<Connection> {
     }
 
     public void addListener(Listener listener) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
         listeners.add(listener);
     }
 
     public void removeListener(Listener listener) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
         listeners.remove(listener);
     }
+
+    public ConnectionBuilder setHost(String host) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.host = host;
+        return this;
+    }
+
+    public ConnectionBuilder setPort(int port) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.port = port;
+        return this;
+    }
+
+    public ConnectionBuilder setPassword(String password) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.password = password;
+        return this;
+    }
+
+    public ConnectionBuilder setUsername(String username) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.username = username;
+        return this;
+    }
+
 }
