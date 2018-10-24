@@ -5,8 +5,10 @@ import de.splotycode.jwa.listener.ListenerRegistry;
 import de.splotycode.jwa.listener.events.StatusChangeEvent;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.PacketConnection;
+import de.splotycode.jwa.packet.packets.ContactsPacket;
 import de.splotycode.jwa.response.Response;
 import de.splotycode.jwa.response.ResponseContext;
+import de.splotycode.jwa.response.responses.ContactResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,9 +50,20 @@ public class Connection {
         return null;
     }
 
-    public <P extends Response> P sendPacket(P response) {
-        Packet packet = response.getPacket();
+    public <P extends Response> P sendPacket(Class<P> clazz, Packet packet) {
+        try {
+            return sendPacket(clazz.newInstance(), packet);
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    private <P extends Response> P sendPacket(P response) {
+        return sendPacket(response, response.getPacket());
+    }
+
+    public <P extends Response> P sendPacket(P response, Packet packet) {
         PacketConnection connection = new PacketConnection(this, packet);
         packet.write(connection);
         try {
@@ -76,4 +89,9 @@ public class Connection {
         listenerRegistry.callEvent(new StatusChangeEvent(this.status, status));
         this.status = status;
     }
+
+    public boolean isNumberValid(String number) {
+        return sendPacket(ContactResponse.class, new ContactsPacket(new String[] {number})).getFirstContact().isValid();
+    }
+
 }
