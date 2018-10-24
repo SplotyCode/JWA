@@ -1,5 +1,6 @@
 package de.splotycode.jwa;
 
+import de.splotycode.jwa.core.GatewayStatus;
 import de.splotycode.jwa.core.Status;
 import de.splotycode.jwa.listener.ListenerRegistry;
 import de.splotycode.jwa.listener.events.StatusChangeEvent;
@@ -9,6 +10,7 @@ import de.splotycode.jwa.packet.packets.ContactsPacket;
 import de.splotycode.jwa.response.Response;
 import de.splotycode.jwa.response.ResponseContext;
 import de.splotycode.jwa.response.responses.ContactResponse;
+import de.splotycode.jwa.response.responses.HealthResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -92,6 +94,10 @@ public class Connection {
 
     public boolean isNumberValid(String number) {
         return sendPacket(ContactResponse.class, new ContactsPacket(new String[] {number})).getFirstContact().isValid();
+    }
+
+    public GatewayStatus getGatewayStatus() {
+        return sendPacket(HealthResponse.class).getGatewayStatus();
     }
 
 }
