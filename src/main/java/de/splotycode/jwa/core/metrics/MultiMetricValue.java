@@ -38,6 +38,13 @@ public class MultiMetricValue extends AbstractMetricValue {
         return map;
     }
 
+    public SubValue getSubValueByParameter(String key, String value) {
+        for (SubValue subValue : values)
+            if (subValue.parameters.containsKey(key) && subValue.parameters.get(key).equals(value))
+                return subValue;
+        return null;
+    }
+
     @AllArgsConstructor
     @Getter
     @EqualsAndHashCode
@@ -45,6 +52,7 @@ public class MultiMetricValue extends AbstractMetricValue {
 
         private Map<String, String> parameters;
         private long value;
+        private String node;
 
         public String getParameterAsString(String name) {
             return parameters.get(name);

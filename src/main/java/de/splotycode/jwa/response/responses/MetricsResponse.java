@@ -3,6 +3,7 @@ package de.splotycode.jwa.response.responses;
 import de.splotycode.jwa.core.metrics.AbstractMetricValue;
 import de.splotycode.jwa.core.metrics.MultiMetricValue;
 import de.splotycode.jwa.core.metrics.SimpleMetricValue;
+import de.splotycode.jwa.core.metrics.objects.*;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.packets.MetricsPacket;
 import de.splotycode.jwa.response.Response;
@@ -53,12 +54,17 @@ public class MetricsResponse implements Response {
                         parameters.put(labelKey, labels.getString(labelKey));
                     }
 
-                    value.getValues().add(new MultiMetricValue.SubValue(parameters, dataObj.getLong("value")));
+                    value.getValues().add(new MultiMetricValue.SubValue(parameters, dataObj.getLong("value"), parameters.get("node")));
                 }
             }
         }
     }
-    
+
+    /*
+     * --------------------------------------------------------------
+     *  General Information Functions
+     * --------------------------------------------------------------
+     */
     
     public AbstractMetricValue getValue(String name) {
         return values.get(name);
@@ -71,7 +77,12 @@ public class MetricsResponse implements Response {
     public MultiMetricValue getMultiValue(String name) {
         return (MultiMetricValue) values.get(name);
     }
-    
+
+    /*
+     * --------------------------------------------------------------
+     *  Simple Information Functions
+     * --------------------------------------------------------------
+     */
 
     public long getUptime() {
         return getUptimeValue().getValue();
@@ -152,5 +163,41 @@ public class MetricsResponse implements Response {
     public SimpleMetricValue getKBSendValue() {
         return getSimpleValue("web_out_kbytes");
     }
+
+
+    /*
+     * --------------------------------------------------------------
+     *  Complex Information Functions
+     * --------------------------------------------------------------
+     */
+
+    public RequestsMetrics getRequests() {
+        return new RequestsMetrics(getMultiValue("web_requests"));
+    }
+
+    public RequestDBDurationCountMetrics getRequestsDBDurationCount() {
+        return new RequestDBDurationCountMetrics(getMultiValue("api_requests_db_duration_ms_count"));
+    }
+
+    public RequestDBDurationSumMetrics getRequestsDBDurationSum() {
+        return new RequestDBDurationSumMetrics(getMultiValue("api_requests_db_duration_ms_sum"));
+    }
+
+    public RequestDurationCountMetrics getRequestsDurationCount() {
+        return new RequestDurationCountMetrics(getMultiValue("api_requests_duration_ms_count"));
+    }
+
+    public RequestDurationSumMetrics getRequestsDurationSum() {
+        return new RequestDurationSumMetrics(getMultiValue("api_requests_duration_ms_sum"));
+    }
+
+    public RequestCoreAppDurationMetrics getRequestCoreAppDurationSum() {
+        return new RequestCoreAppDurationMetrics(getMultiValue("api_requests_coreapp_duration_ms_sum"));
+    }
+
+    public RequestCoreAppDurationMetrics getRequestCoreAppDurationCount() {
+        return new RequestCoreAppDurationMetrics(getMultiValue("api_requests_coreapp_duration_ms_count"));
+    }
+
 
 }
