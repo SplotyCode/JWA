@@ -5,7 +5,7 @@ import lombok.Getter;
 
 import java.util.Map;
 
-public class RequestDBDurationSumMetrics extends AbstractMultiMetrics {
+public class RequestDBDurationMetrics extends AbstractMultiMetrics {
 
     public static final String PARAMETER_RESULT = "result",
                                PARAMETER_METHOD = "method",
@@ -13,7 +13,7 @@ public class RequestDBDurationSumMetrics extends AbstractMultiMetrics {
 
     @Getter private Map<String, MultiMetricValue.SubValue> methodValueMap;
 
-    public RequestDBDurationSumMetrics(MultiMetricValue value) {
+    public RequestDBDurationMetrics(MultiMetricValue value) {
         super(value);
         methodValueMap = value.generadeParameterSubValueMap(PARAMETER_METHOD);
     }

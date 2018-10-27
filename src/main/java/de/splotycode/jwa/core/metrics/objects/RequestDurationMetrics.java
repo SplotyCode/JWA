@@ -5,14 +5,14 @@ import lombok.Getter;
 
 import java.util.Map;
 
-public class RequestDurationSumMetrics extends AbstractMultiMetrics {
+public class RequestDurationMetrics extends AbstractMultiMetrics {
 
     public static final String PARAMETER_RESULT = "result",
                                PARAMETER_METHOD = "method";
 
-   @Getter private Map<String, MultiMetricValue.SubValue> methodValueMap;
+    @Getter private Map<String, MultiMetricValue.SubValue> methodValueMap;
 
-    public RequestDurationSumMetrics(MultiMetricValue value) {
+    public RequestDurationMetrics(MultiMetricValue value) {
         super(value);
         methodValueMap = value.generadeParameterSubValueMap(PARAMETER_METHOD);
     }

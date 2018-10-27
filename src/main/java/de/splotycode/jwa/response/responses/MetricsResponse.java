@@ -175,20 +175,20 @@ public class MetricsResponse implements Response {
         return new RequestsMetrics(getMultiValue("web_requests"));
     }
 
-    public RequestDBDurationCountMetrics getRequestsDBDurationCount() {
-        return new RequestDBDurationCountMetrics(getMultiValue("api_requests_db_duration_ms_count"));
+    public RequestDBDurationMetrics getRequestsDBDurationCount() {
+        return new RequestDBDurationMetrics(getMultiValue("api_requests_db_duration_ms_count"));
     }
 
-    public RequestDBDurationSumMetrics getRequestsDBDurationSum() {
-        return new RequestDBDurationSumMetrics(getMultiValue("api_requests_db_duration_ms_sum"));
+    public RequestDBDurationMetrics getRequestsDBDurationSum() {
+        return new RequestDBDurationMetrics(getMultiValue("api_requests_db_duration_ms_sum"));
     }
 
-    public RequestDurationCountMetrics getRequestsDurationCount() {
-        return new RequestDurationCountMetrics(getMultiValue("api_requests_duration_ms_count"));
+    public RequestDurationMetrics getRequestsDurationCount() {
+        return new RequestDurationMetrics(getMultiValue("api_requests_duration_ms_count"));
     }
 
-    public RequestDurationSumMetrics getRequestsDurationSum() {
-        return new RequestDurationSumMetrics(getMultiValue("api_requests_duration_ms_sum"));
+    public RequestDurationMetrics getRequestsDurationSum() {
+        return new RequestDurationMetrics(getMultiValue("api_requests_duration_ms_sum"));
     }
 
     public RequestCoreAppDurationMetrics getRequestCoreAppDurationSum() {
@@ -198,6 +198,5 @@ public class MetricsResponse implements Response {
     public RequestCoreAppDurationMetrics getRequestCoreAppDurationCount() {
         return new RequestCoreAppDurationMetrics(getMultiValue("api_requests_coreapp_duration_ms_count"));
     }
-
 
 }
