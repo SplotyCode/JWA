@@ -7,10 +7,12 @@ import de.splotycode.jwa.listener.events.StatusChangeEvent;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.PacketConnection;
 import de.splotycode.jwa.packet.packets.ContactsPacket;
+import de.splotycode.jwa.packet.packets.LoginPacket;
 import de.splotycode.jwa.response.Response;
 import de.splotycode.jwa.response.ResponseContext;
 import de.splotycode.jwa.response.responses.ContactResponse;
 import de.splotycode.jwa.response.responses.HealthResponse;
+import de.splotycode.jwa.response.responses.LoginResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +41,8 @@ public class Connection {
     }
 
     public void login() {
-
+        setStatus(Status.LOGGINGIN);
+        session = sendPacket(LoginResponse.class, new LoginPacket(username, password)).getToken();
         setStatus(Status.ONLINE);
     }
 
