@@ -15,6 +15,7 @@ import de.splotycode.jwa.response.ResponseContext;
 import de.splotycode.jwa.response.responses.ContactResponse;
 import de.splotycode.jwa.response.responses.HealthResponse;
 import de.splotycode.jwa.response.responses.LoginResponse;
+import de.splotycode.jwa.response.responses.MetricsResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -122,7 +123,7 @@ public class Connection {
         PacketConnection connection = new PacketConnection(this, packet);
         packet.write(connection);
         try {
-            ResponseContext result = connection.send();
+            ResponseContext result = connection.send(response);
             response.read(result);
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,5 +162,12 @@ public class Connection {
         return sendPacket(HealthResponse.class).getGatewayStatus();
     }
 
+    public MetricsResponse getMetrics() {
+        return sendPacket(MetricsResponse.class);
+    }
+
+    public void getMetrics(Consumer<MetricsResponse> consumer) {
+        sendPacket(MetricsResponse.class, consumer);
+    }
 
 }

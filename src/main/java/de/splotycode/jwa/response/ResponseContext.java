@@ -22,10 +22,11 @@ public class ResponseContext {
     @Getter private String errorMessage;
     @Getter private Map<String, String> headers = new HashMap<>();
     @Getter private JSONObject object;
+    @Getter private String body;
 
-    public ResponseContext(InputStream stream) {
+    public ResponseContext(InputStream stream, Response response) {
         try {
-            parse(IOUtils.toString(stream, "UTF-8"));
+            parse(IOUtils.toString(stream, "UTF-8"), response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,7 +36,7 @@ public class ResponseContext {
      * Parses an raw response into this object
      * @param response the raw response
      */
-    public void parse(String response) {
+    public void parse(String response, Response responseObj) {
         String[] lines = response.split("\n");
         String[] firstLine = lines[0].split(" ");
 
@@ -58,11 +59,17 @@ public class ResponseContext {
                 body.append(line).append("\n");
             }
         }
-        object = new JSONObject(body);
-        JSONArray errorArray = object.getJSONArray("errors");
-        for (int i = 0; i < errorArray.length(); i++) {
-            JSONObject errorObj = errorArray.getJSONObject(i);
-            errors.add(new Error(errorObj.getInt("code"), errorObj.getString("title"), errorObj.getString("details")));
+        this.body = body.toString();
+
+        switch (responseObj.getParser()) {
+            case JSON:
+                object = new JSONObject(this.body);
+                JSONArray errorArray = object.getJSONArray("errors");
+                for (int i = 0; i < errorArray.length(); i++) {
+                    JSONObject errorObj = errorArray.getJSONObject(i);
+                    errors.add(new Error(errorObj.getInt("code"), errorObj.getString("title"), errorObj.getString("details")));
+                }
+                break;
         }
     }
 

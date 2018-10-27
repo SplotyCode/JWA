@@ -19,4 +19,12 @@ public interface Response {
      */
     void read(ResponseContext context);
 
+    /**
+     * Specify response parser
+     * @return the parser that should be used
+     */
+    default ResponseParser getParser() {
+        return ResponseParser.JSON;
+    }
+
 }

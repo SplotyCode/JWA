@@ -1,6 +1,7 @@
 package de.splotycode.jwa.packet;
 
 import de.splotycode.jwa.Connection;
+import de.splotycode.jwa.response.Response;
 import de.splotycode.jwa.response.ResponseContext;
 import lombok.Getter;
 import org.json.JSONObject;
@@ -64,7 +65,7 @@ public class PacketConnection {
      * @return the server response
      * @throws IOException Socket IO Exceptions
      */
-    public ResponseContext send() throws IOException {
+    public ResponseContext send(Response response) throws IOException {
         headers.put("Content-Type", "application/json");
         //Add Session Id if needed
         if (packet.authNeeded()) {
@@ -91,7 +92,7 @@ public class PacketConnection {
         //End Connection
         out.flush();
         socket.close();
-        return new ResponseContext(socket.getInputStream());
+        return new ResponseContext(socket.getInputStream(), response);
     }
 
 }
