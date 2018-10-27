@@ -1,6 +1,8 @@
 package de.splotycode.jwa;
 
 import de.splotycode.jwa.core.GatewayStatus;
+import de.splotycode.jwa.core.GlobalMultiThreadManager;
+import de.splotycode.jwa.core.MultiThreadMode;
 import de.splotycode.jwa.core.Status;
 import de.splotycode.jwa.listener.ListenerRegistry;
 import de.splotycode.jwa.listener.events.StatusChangeEvent;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /**
  * The Main Connection to Whatsapp (Not Keep-Alive)
@@ -31,8 +34,9 @@ public class Connection {
     @Setter private String username, password;
     @Getter private String session;
     @Getter private Status status = Status.INITIALISED;
-    private Executor executor = Executors.newSingleThreadExecutor();
+    @Setter private Executor executor = Executors.newSingleThreadExecutor();
     @Getter @Setter private ListenerRegistry listenerRegistry;
+    @Getter @Setter private MultiThreadMode threadMode;
 
     public Connection(SocketAddress address, String username, String password) {
         this.address = address;
@@ -40,10 +44,35 @@ public class Connection {
         this.password = password;
     }
 
-    public void login() {
+    public void login(boolean async) {
         setStatus(Status.LOGGINGIN);
-        session = sendPacket(LoginResponse.class, new LoginPacket(username, password)).getToken();
+        Runnable runnable = () -> session = sendPacket(LoginResponse.class, new LoginPacket(username, password)).getToken();
+        if (async) {
+            execMultiThreaded(runnable);
+        } else {
+            runnable.run();
+        }
         setStatus(Status.ONLINE);
+    }
+
+    private void execMultiThreaded(Runnable runnable) {
+        switch (threadMode) {
+            case NONE:
+                throw new IllegalStateException("Can not execute Multithreaded operation if MultiThreadMode is none");
+            case GLOBAL:
+                GlobalMultiThreadManager.getInstance().exec(runnable);
+                break;
+            case INSTANCE:
+                executor.execute(runnable);
+                break;
+        }
+    }
+
+    public <P extends Response> void sendPacket(Class<P> clazz, Consumer<P> consumer) {
+        execMultiThreaded(() -> {
+            P p = sendPacket(clazz);
+            consumer.accept(p);
+        });
     }
 
     public <P extends Response> P sendPacket(Class<P> clazz) {
@@ -55,6 +84,13 @@ public class Connection {
         return null;
     }
 
+    public <P extends Response> void sendPacket(Class<P> clazz, Packet packet, Consumer<P> consumer) {
+        execMultiThreaded(() -> {
+            P p = sendPacket(clazz, packet);
+            consumer.accept(p);
+        });
+    }
+
     public <P extends Response> P sendPacket(Class<P> clazz, Packet packet) {
         try {
             return sendPacket(clazz.newInstance(), packet);
@@ -64,8 +100,22 @@ public class Connection {
         return null;
     }
 
+    public <P extends Response> void sendPacket(P response, Consumer<P> consumer) {
+        execMultiThreaded(() -> {
+            P p = sendPacket(response);
+            consumer.accept(p);
+        });
+    }
+
     private <P extends Response> P sendPacket(P response) {
         return sendPacket(response, response.getPacket());
+    }
+
+    public <P extends Response> void sendPacket(P response, Packet packet, Consumer<P> consumer) {
+        execMultiThreaded(() -> {
+            P p = sendPacket(response, packet);
+            consumer.accept(p);
+        });
     }
 
     public <P extends Response> P sendPacket(P response, Packet packet) {
@@ -80,7 +130,7 @@ public class Connection {
         return response;
     }
 
-    public boolean isLoggedIn() {
+    public synchronized boolean isLoggedIn() {
         return status == Status.ONLINE;
     }
 
@@ -90,17 +140,26 @@ public class Connection {
         }
     }
 
-    public void setStatus(Status status) {
+    public synchronized void setStatus(Status status) {
         listenerRegistry.callEvent(new StatusChangeEvent(this.status, status));
         this.status = status;
+    }
+
+    public void isNumberValid(String number, Consumer<Boolean> validConsumer) {
+        execMultiThreaded(() -> validConsumer.accept(isNumberValid(number)));
     }
 
     public boolean isNumberValid(String number) {
         return sendPacket(ContactResponse.class, new ContactsPacket(new String[] {number})).getFirstContact().isValid();
     }
 
+    public void getGatewayStatus(Consumer<GatewayStatus> consumer) {
+        sendPacket(HealthResponse.class, healthResponse -> consumer.accept(healthResponse.getGatewayStatus()));
+    }
+
     public GatewayStatus getGatewayStatus() {
         return sendPacket(HealthResponse.class).getGatewayStatus();
     }
+
 
 }

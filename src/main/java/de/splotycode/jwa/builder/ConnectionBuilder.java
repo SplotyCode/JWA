@@ -1,6 +1,7 @@
 package de.splotycode.jwa.builder;
 
 import de.splotycode.jwa.Connection;
+import de.splotycode.jwa.core.MultiThreadMode;
 import de.splotycode.jwa.core.Status;
 import de.splotycode.jwa.listener.Listener;
 import de.splotycode.jwa.listener.ListenerRegistry;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 /**
  * Builder for building a Connection
@@ -23,6 +25,11 @@ public class ConnectionBuilder implements Builder<Connection> {
     private String host;
     private int port;
     private String username, password;
+
+    private Executor executor = null;
+    private MultiThreadMode threadMode = MultiThreadMode.NONE;
+
+    private boolean loginAsync = false;
 
     private Set<Listener> listeners = new HashSet<>();
 
@@ -50,6 +57,7 @@ public class ConnectionBuilder implements Builder<Connection> {
         }
 
         Connection connection =  new Connection(new InetSocketAddress(host, port), username, password);
+        connection.setThreadMode(threadMode);
 
         ListenerRegistry listenerRegistry = new ListenerRegistry();
         listeners.forEach(listenerRegistry::addListener);
@@ -57,7 +65,11 @@ public class ConnectionBuilder implements Builder<Connection> {
 
         connection.setStatus(Status.INITIALISED);
 
-        connection.login();
+        if (executor != null) {
+            connection.setExecutor(executor);
+        }
+
+        connection.login(loginAsync);
         return connection;
     }
 
@@ -83,9 +95,21 @@ public class ConnectionBuilder implements Builder<Connection> {
         return this;
     }
 
+    public ConnectionBuilder setExecutor(Executor executor) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.executor = executor;
+        return this;
+    }
+
     public ConnectionBuilder setPassword(String password) {
         if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
         this.password = password;
+        return this;
+    }
+
+    public ConnectionBuilder setThreadMode(MultiThreadMode threadMode) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.threadMode = threadMode;
         return this;
     }
 
@@ -95,4 +119,9 @@ public class ConnectionBuilder implements Builder<Connection> {
         return this;
     }
 
+    public ConnectionBuilder setLoginAsync(boolean loginAsync) {
+        if (build) throw new AlreadyBuiltException("Builder was already used (build() called");
+        this.loginAsync = loginAsync;
+        return this;
+    }
 }
