@@ -29,7 +29,7 @@ public class Group implements ValueCacheListener.CacheListener {
     private ValueCacheListener<List<User>> admins = new ValueCacheListener<>(this, CacheDelays.getInstance().getGroupAdmins());
     private ValueCacheListener<List<User>> participants = new ValueCacheListener<>(this, CacheDelays.getInstance().getGroupParticipants());
 
-    private ValueCache<String> inviteURL = new ValueCache<>(this::updateLink, CacheDelays.getInstance().getGroupInviteiUrl());
+    private ValueCache<String> inviteURL = new ValueCache<>(this::updateLink, CacheDelays.getInstance().getGroupInviteUrl());
 
     public Group(String groupId, Connection connection) {
         this.groupId = groupId;

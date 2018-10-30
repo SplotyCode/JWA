@@ -6,13 +6,11 @@ import de.splotycode.jwa.listener.events.StatusChangeEvent;
 import de.splotycode.jwa.packet.Packet;
 import de.splotycode.jwa.packet.PacketConnection;
 import de.splotycode.jwa.packet.packets.ContactsPacket;
+import de.splotycode.jwa.packet.packets.CreateGroupPacket;
 import de.splotycode.jwa.packet.packets.LoginPacket;
 import de.splotycode.jwa.response.Response;
 import de.splotycode.jwa.response.ResponseContext;
-import de.splotycode.jwa.response.responses.ContactResponse;
-import de.splotycode.jwa.response.responses.HealthResponse;
-import de.splotycode.jwa.response.responses.LoginResponse;
-import de.splotycode.jwa.response.responses.MetricsResponse;
+import de.splotycode.jwa.response.responses.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -174,6 +172,20 @@ public class Connection {
 
     public Group getGroup(String id) {
         return new Group(id, this);
+    }
+
+    public Group createGroup(String subject) {
+        CreateGroupResponse response = sendPacket(CreateGroupResponse.class, new CreateGroupPacket(subject));
+        Group group = getGroup(response.getId());
+        group.getCreationTime().setValue(group.getCreationTime().getValue());
+        return group;
+    }
+
+    public void createGroup(String subject, Consumer<Group> groupConsumer) {
+        execMultiThreaded(() -> {
+            Group group = createGroup(subject);
+            groupConsumer.accept(group);
+        });
     }
 
 }
