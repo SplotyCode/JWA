@@ -1,9 +1,6 @@
 package de.splotycode.jwa;
 
-import de.splotycode.jwa.core.GatewayStatus;
-import de.splotycode.jwa.core.GlobalMultiThreadManager;
-import de.splotycode.jwa.core.MultiThreadMode;
-import de.splotycode.jwa.core.Status;
+import de.splotycode.jwa.core.*;
 import de.splotycode.jwa.listener.ListenerRegistry;
 import de.splotycode.jwa.listener.events.StatusChangeEvent;
 import de.splotycode.jwa.packet.Packet;
@@ -21,6 +18,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -168,6 +166,14 @@ public class Connection {
 
     public void getMetrics(Consumer<MetricsResponse> consumer) {
         sendPacket(MetricsResponse.class, consumer);
+    }
+
+    public User getUser(String id) {
+        return new User(id, this);
+    }
+
+    public Group getGroup(String id) {
+        return new Group(id, this);
     }
 
 }
