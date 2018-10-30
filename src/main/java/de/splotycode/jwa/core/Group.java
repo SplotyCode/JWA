@@ -1,8 +1,12 @@
 package de.splotycode.jwa.core;
 
 import de.splotycode.jwa.Connection;
+import de.splotycode.jwa.packet.packets.CreateGroupInvitePacket;
+import de.splotycode.jwa.packet.packets.DeleteGroupInvitePacket;
 import de.splotycode.jwa.packet.packets.GetGroupPacket;
 import de.splotycode.jwa.packet.packets.LeaveGroupPacket;
+import de.splotycode.jwa.response.responses.CreateGroupInviteResponse;
+import de.splotycode.jwa.response.responses.DeleteGroupInviteResponse;
 import de.splotycode.jwa.response.responses.GetGroupResponse;
 import de.splotycode.jwa.response.responses.LeaveGroupResponse;
 import lombok.Getter;
@@ -50,6 +54,14 @@ public class Group implements ValueCacheListener.CacheListener {
 
     public void leave() {
         connection.sendPacket(LeaveGroupResponse.class, new LeaveGroupPacket(groupId));
+    }
+
+    public String getInviteLink() {
+        return connection.sendPacket(CreateGroupInviteResponse.class, new CreateGroupInvitePacket(groupId)).getUrl();
+    }
+
+    public void removeInviteLink() {
+        connection.sendPacket(DeleteGroupInviteResponse.class, new DeleteGroupInvitePacket(groupId));
     }
 
 }
