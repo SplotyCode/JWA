@@ -2,7 +2,9 @@ package de.splotycode.jwa.core;
 
 import de.splotycode.jwa.Connection;
 import de.splotycode.jwa.packet.packets.GetGroupPacket;
+import de.splotycode.jwa.packet.packets.LeaveGroupPacket;
 import de.splotycode.jwa.response.responses.GetGroupResponse;
+import de.splotycode.jwa.response.responses.LeaveGroupResponse;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -44,6 +46,10 @@ public class Group implements ValueCacheListener.CacheListener {
                 participants.add(new User(participant, connection));
             this.admins.setValue(participants);
         });
+    }
+
+    public void leave() {
+        connection.sendPacket(LeaveGroupResponse.class, new LeaveGroupPacket(groupId));
     }
 
 }
