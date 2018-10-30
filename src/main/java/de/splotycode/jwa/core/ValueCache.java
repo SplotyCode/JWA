@@ -27,4 +27,10 @@ public class ValueCache<T> {
         }
         return value;
     }
+
+    public void resetValue() {
+        value = null;
+    }
+
+
 }

@@ -13,6 +13,8 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Getter
 public class Group implements ValueCacheListener.CacheListener {
@@ -27,41 +29,44 @@ public class Group implements ValueCacheListener.CacheListener {
     private ValueCacheListener<List<User>> admins = new ValueCacheListener<>(this, CacheDelays.getInstance().getGroupAdmins());
     private ValueCacheListener<List<User>> participants = new ValueCacheListener<>(this, CacheDelays.getInstance().getGroupParticipants());
 
+    private ValueCache<String> inviteURL = new ValueCache<>(this::updateLink, CacheDelays.getInstance().getGroupInviteiUrl());
+
     public Group(String groupId, Connection connection) {
         this.groupId = groupId;
         this.connection = connection;
     }
 
+    private String updateLink() {
+        return connection.sendPacket(CreateGroupInviteResponse.class, new CreateGroupInvitePacket(groupId)).getUrl();
+    }
+
     @Override
     public void refresh() {
         GetGroupPacket packet = new GetGroupPacket(groupId);
-        connection.sendPacket(GetGroupResponse.class, packet, response -> {
-            subject.setValue(response.getSubject());
-            creationTime.setValue(response.getCreationTime());
-            creator.setValue(new User(response.getCreator(), connection));
+        GetGroupResponse response = connection.sendPacket(GetGroupResponse.class, packet);
+        subject.setValue(response.getSubject());
+        creationTime.setValue(response.getCreationTime());
+        creator.setValue(new User(response.getCreator(), connection));
 
-            List<User> admins = new ArrayList<>();
-            for (String admin : response.getAdmins())
-                admins.add(new User(admin, connection));
-            this.admins.setValue(admins);
+        List<User> admins = new ArrayList<>();
+        for (String admin : response.getAdmins())
+            admins.add(new User(admin, connection));
+        this.admins.setValue(admins);
 
-            List<User> participants = new ArrayList<>();
-            for (String participant : response.getAdmins())
-                participants.add(new User(participant, connection));
-            this.admins.setValue(participants);
-        });
+        List<User> participants = new ArrayList<>();
+        for (String participant : response.getAdmins())
+            participants.add(new User(participant, connection));
+        this.admins.setValue(participants);
+
     }
 
     public void leave() {
         connection.sendPacket(LeaveGroupResponse.class, new LeaveGroupPacket(groupId));
     }
 
-    public String getInviteLink() {
-        return connection.sendPacket(CreateGroupInviteResponse.class, new CreateGroupInvitePacket(groupId)).getUrl();
-    }
-
     public void removeInviteLink() {
         connection.sendPacket(DeleteGroupInviteResponse.class, new DeleteGroupInvitePacket(groupId));
+        inviteURL.resetValue();
     }
 
 }

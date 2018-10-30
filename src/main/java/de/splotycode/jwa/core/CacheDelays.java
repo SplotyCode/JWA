@@ -17,6 +17,7 @@ public class CacheDelays {
     private long groupCreator = 1000 * 15;
     private long groupAdmins = 1000 * 15;
     private long groupParticipants = 1000 * 15;
+    private long groupInviteiUrl = 1000 * 15;
 
 
 }
