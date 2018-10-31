@@ -131,15 +131,16 @@ public class Connection {
         return status == Status.ONLINE;
     }
 
-    public void awaitReady() throws InterruptedException {
+    public synchronized void awaitReady() throws InterruptedException {
         while (status != Status.ONLINE) {
-            Thread.sleep(150L);
+            wait();
         }
     }
 
     public synchronized void setStatus(Status status) {
         listenerRegistry.callEvent(new StatusChangeEvent(this.status, status));
         this.status = status;
+        notify();
     }
 
     public void isNumberValid(String number, Consumer<Boolean> validConsumer) {
